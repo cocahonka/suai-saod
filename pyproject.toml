@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "suai-saod"
+version = "0.0.0"
+description = "Labs for SUAI SAOD"
+authors = ["cocahonka <cocahonka@gmail.com>"]
+readme = "readme.md"
+packages = [
+    { include = "common"},
+    { include = "lab2"},
+    { include = "lab3"},
+]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.11.2"
+black = "^24.8.0"
+isort = "^5.13.2"
+autoflake = "^2.3.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+strict = true
+
+[tool.black]
+line-length = 100
