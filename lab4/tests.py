@@ -235,7 +235,8 @@ class SortingTest(unittest.TestCase):
         self._test_sorting(_sort)
 
     def test_counting_sort_through_public_api(self) -> None:
-        self.random_size = 100
+        self.random_size = 10
+        self.random_iteration = 10
         self.random_lower = -5
         self.random_upper = 5
 
@@ -244,6 +245,8 @@ class SortingTest(unittest.TestCase):
             [linked_list.add(x) for x in array]
             counting_sort_through_public_api(linked_list, lambda x: x)
             return [x for x in linked_list]
+
+        self._test_sorting(_sort)
 
 
 if __name__ == "__main__":
