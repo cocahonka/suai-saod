@@ -6,6 +6,7 @@ from typing import Callable, Generator, List
 
 from common.extra_typing import override
 from lab4.algs.arrays.insertion_sort import insertion_sort
+from lab4.algs.arrays.merge_sort import merge_sort, merge_sort_in_place
 from lab4.arrays.array import (
     ArrayIndexOutOfBoundsException,
     ArrayOverflowException,
@@ -170,6 +171,7 @@ class SortingTest(unittest.TestCase):
         test_cases: List[List[int]] = [
             [],
             [5],
+            [3, 10, 5, 9, 1],
             [1, 2, 3, 4, 5],
             [5, 4, 3, 2, 1],
             [3, 1, 4, 3, 2],
@@ -188,6 +190,12 @@ class SortingTest(unittest.TestCase):
 
     def test_insertion_sort(self) -> None:
         self._test_sorting(insertion_sort)
+
+    def test_merge_sort(self) -> None:
+        self._test_sorting(merge_sort)
+
+    def test_merge_sort_in_place(self) -> None:
+        self._test_sorting(merge_sort_in_place)
 
 
 if __name__ == "__main__":
