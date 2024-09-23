@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Generic, Optional, Sequence, TypeVar, Union, overload
+from typing import Generic, Iterator, Optional, Sequence, TypeVar, Union, overload
 
 T = TypeVar("T")
 
@@ -67,3 +67,6 @@ class IArray(ABC, Sequence[T], Generic[T]):
     # Utils
     @abstractmethod
     def __str__(self) -> str: ...
+
+    @abstractmethod
+    def __iter__(self) -> Iterator[T]: ...

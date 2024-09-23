@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Final, Optional, Sequence, Union, overload
+from typing import Final, Iterator, Optional, Sequence, Union, overload
 
 from common.extra_typing import override
 from lab4.arrays.array import ArrayOverflowException, IArray, T
@@ -83,3 +83,7 @@ class NotGrowableArray(IArray[T]):
     @override
     def __str__(self) -> str:
         return self._delegate.__str__()
+
+    @override
+    def __iter__(self) -> Iterator[T]:
+        return iter(self._delegate)
