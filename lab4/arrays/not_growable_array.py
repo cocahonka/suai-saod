@@ -65,8 +65,8 @@ class NotGrowableArray(IArray[T]):
         return self._delegate.contains(value)
 
     @override
-    def __setitem__(self, index: int, value: T) -> None:
-        return self._delegate.__setitem__(index, value)
+    def update(self, index: int, value: T) -> None:
+        return self._delegate.update(index, value)
 
     @override
     def remove(self, value: T) -> bool:

@@ -49,7 +49,10 @@ class IArray(ABC, Sequence[T], Generic[T]):
 
     # Update
     @abstractmethod
-    def __setitem__(self, index: int, value: T) -> None: ...
+    def update(self, index: int, value: T) -> None: ...
+
+    def __setitem__(self, index: int, value: T) -> None:
+        self.update(index, value)
 
     # Delete
     @abstractmethod
