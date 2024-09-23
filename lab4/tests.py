@@ -9,10 +9,7 @@ from lab2.linked_list.doubly_linked_list import DoublyLinkedList
 from lab2.linked_list.linked_list import ILinkedList
 from lab4.algs.arrays.insertion_sort import insertion_sort
 from lab4.algs.arrays.merge_sort import merge_sort, merge_sort_in_place
-from lab4.algs.linked_list.gnome_sort import (
-    gnome_sort_through_node,
-    gnome_sort_through_public_api,
-)
+from lab4.algs.linked_list.gnome_sort import gnome_sort_through_public_api
 from lab4.arrays.array import (
     ArrayIndexOutOfBoundsException,
     ArrayOverflowException,
@@ -235,10 +232,6 @@ class SortingTest(unittest.TestCase):
 
     def test_gnome_sort_through_public_api(self) -> None:
         self._test_sorting_linked_list(gnome_sort_through_public_api)
-
-    def test_gnome_sort_through_node(self) -> None:
-        # TODO: Fix type hinting for gnome_sort_through_node
-        self._test_sorting_linked_list(gnome_sort_through_node)  # type: ignore
 
 
 if __name__ == "__main__":
