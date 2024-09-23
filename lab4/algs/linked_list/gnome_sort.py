@@ -12,16 +12,11 @@ def gnome_sort_through_public_api(
     linked_list: ILinkedList[T],
     compare: Callable[[T, T], bool] = default_compare,
 ) -> None:
-    if linked_list.is_empty():
-        return
 
-    i: int = 1
-    while i < len(linked_list):
-        first, second = linked_list[i], linked_list[i - 1]
-        if not compare(first, second):
-            i += 1
+    index: int = 1
+    while index < len(linked_list):
+        if index > 0 and compare(current := linked_list[index], previous := linked_list[index - 1]):
+            linked_list[index], linked_list[index - 1] = previous, current
+            index -= 1
         else:
-            linked_list.update(i, second)
-            linked_list.update(i - 1, first)
-            if i > 1:
-                i -= 1
+            index += 1
