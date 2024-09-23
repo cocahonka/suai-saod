@@ -13,7 +13,6 @@ BenchmarkMethod = Callable[["Benchmark"], BenchmarkCallback]
 class Benchmark(ABC):
     @classmethod
     def run_benchmarks(cls) -> None:
-        print("c")
         benchmark_methods: List[BenchmarkMethod] = cls._get_benchmark_methods()
 
         for method in benchmark_methods:
