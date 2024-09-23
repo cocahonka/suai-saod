@@ -1,6 +1,11 @@
+from __future__ import annotations
+
 import unittest
+from random import randint
+from typing import Callable, Generator, List
 
 from common.extra_typing import override
+from lab4.algs.arrays.insertion_sort import insertion_sort
 from lab4.arrays.array import (
     ArrayIndexOutOfBoundsException,
     ArrayOverflowException,
@@ -149,6 +154,40 @@ class ArrayTest(unittest.TestCase):
     def test_reverse(self) -> None:
         self.array.add_all([1, 2, 3, 4])
         self.assertEqual([*reversed(self.array)], [4, 3, 2, 1])
+
+
+class SortingTest(unittest.TestCase):
+    def random_list_generator(
+        self,
+        size: int,
+        upper_bound: int = 100_000,
+        lower_bound: int = -100_000,
+    ) -> Generator[List[int]]:
+        while True:
+            yield [randint(lower_bound, upper_bound) for _ in range(size)]
+
+    def _test_sorting(self, sort_func: Callable[[List[int]], None]) -> None:
+        test_cases: List[List[int]] = [
+            [],
+            [5],
+            [1, 2, 3, 4, 5],
+            [5, 4, 3, 2, 1],
+            [3, 1, 4, 3, 2],
+            [-3, -1, 4, 2, 0],
+        ]
+
+        for case in test_cases:
+            array: List[int] = case.copy()
+            sort_func(array)
+            self.assertListEqual(array, sorted(case))
+
+        for _ in range(100):
+            array = next(self.random_list_generator(100))
+            sort_func(array)
+            self.assertListEqual(array, sorted(array))
+
+    def test_insertion_sort(self) -> None:
+        self._test_sorting(insertion_sort)
 
 
 if __name__ == "__main__":
