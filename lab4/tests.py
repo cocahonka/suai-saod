@@ -9,6 +9,7 @@ from lab2.linked_list.doubly_linked_list import DoublyLinkedList
 from lab2.linked_list.linked_list import ILinkedList
 from lab4.algs.arrays.insertion_sort import insertion_sort
 from lab4.algs.arrays.merge_sort import merge_sort, merge_sort_in_place
+from lab4.algs.linked_list.counting_sort import counting_sort_through_public_api
 from lab4.algs.linked_list.gnome_sort import gnome_sort_through_public_api
 from lab4.arrays.array import (
     ArrayIndexOutOfBoundsException,
@@ -221,6 +222,33 @@ class SortingTest(unittest.TestCase):
             sort_func(linked_list)
             self.assertListEqual([x for x in linked_list], sorted(array))
 
+    def _test_sorting_linked_list_by_key(
+        self,
+        sort_func: Callable[[ILinkedList[int], Callable[[int], int]], None],
+    ) -> None:
+        test_cases: List[List[int]] = [
+            [],
+            [5],
+            [3, 10, 5, 9, 1],
+            [1, 2, 3, 4, 5],
+            [5, 4, 3, 2, 1],
+            [3, 1, 4, 3, 2],
+            [-3, -1, 4, 2, 0],
+        ]
+
+        for case in test_cases:
+            linked_list: ILinkedList[int] = DoublyLinkedList()
+            [linked_list.add(x) for x in case]
+            sort_func(linked_list, lambda x: x)
+            self.assertListEqual([x for x in linked_list], sorted(case))
+
+        for _ in range(100):
+            linked_list = DoublyLinkedList()
+            array = next(self.random_list_generator(100))
+            [linked_list.add(x) for x in array]
+            sort_func(linked_list, lambda x: x)
+            self.assertListEqual([x for x in linked_list], sorted(array))
+
     def test_insertion_sort(self) -> None:
         self._test_sorting(insertion_sort)
 
@@ -232,6 +260,9 @@ class SortingTest(unittest.TestCase):
 
     def test_gnome_sort_through_public_api(self) -> None:
         self._test_sorting_linked_list(gnome_sort_through_public_api)
+
+    def test_counting_sort_through_public_api(self) -> None:
+        self._test_sorting_linked_list_by_key(counting_sort_through_public_api)
 
 
 if __name__ == "__main__":
