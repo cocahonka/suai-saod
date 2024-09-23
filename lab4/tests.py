@@ -10,7 +10,10 @@ from lab2.linked_list.linked_list import ILinkedList
 from lab4.algs.arrays.insertion_sort import insertion_sort
 from lab4.algs.arrays.merge_sort import merge_sort, merge_sort_in_place
 from lab4.algs.linked_list.counting_sort import counting_sort_through_public_api
-from lab4.algs.linked_list.gnome_sort import gnome_sort_through_public_api
+from lab4.algs.linked_list.gnome_sort import (
+    gnome_sort_through_node,
+    gnome_sort_through_public_api,
+)
 from lab4.arrays.array import (
     ArrayIndexOutOfBoundsException,
     ArrayOverflowException,
@@ -230,6 +233,15 @@ class SortingTest(unittest.TestCase):
             linked_list: ILinkedList[int] = DoublyLinkedList()
             [linked_list.add(x) for x in array]
             gnome_sort_through_public_api(linked_list)
+            return [x for x in linked_list]
+
+        self._test_sorting(_sort)
+
+    def test_gnome_sort_through_node(self) -> None:
+        def _sort(array: List[int]) -> List[int]:
+            linked_list: DoublyLinkedList[int] = DoublyLinkedList()
+            [linked_list.add(x) for x in array]
+            gnome_sort_through_node(linked_list)
             return [x for x in linked_list]
 
         self._test_sorting(_sort)
