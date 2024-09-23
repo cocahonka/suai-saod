@@ -13,8 +13,7 @@ from lab4.arrays.not_growable_array import NotGrowableArray
 class ArrayTest(unittest.TestCase):
     @override
     def setUp(self) -> None:
-        # TODO: Remove mypy suppression
-        self.array: IArray[int] = DynamicArray()  # type: ignore
+        self.array: IArray[int] = DynamicArray(1)
 
     def test_add(self) -> None:
         self.array.add(1)
@@ -33,7 +32,7 @@ class ArrayTest(unittest.TestCase):
         self.assertEqual(self.array[0], 1)
         self.assertEqual(self.array[1], 2)
 
-        self.array.add_all(self.array)
+        self.array.add_all(self.array[::])
         self.assertEqual(len(self.array), 4)
         self.assertEqual(self.array[0], 1)
         self.assertEqual(self.array[1], 2)
@@ -85,12 +84,12 @@ class ArrayTest(unittest.TestCase):
 
     def test_get_item_dunder_slice(self) -> None:
         self.array.add_all([1, 2, 3, 4])
-        self.assertEqual(self.array[1:3], [2, 3])
-        self.assertEqual(self.array[1:], [2, 3, 4])
-        self.assertEqual(self.array[:3], [1, 2, 3])
-        self.assertEqual(self.array[:], [1, 2, 3, 4])
-        self.assertEqual(self.array[1:3:2], [2])
-        self.assertEqual(self.array[::-1], [4, 3, 2, 1])
+        self.assertEqual([x for x in self.array[1:3]], [2, 3])
+        self.assertEqual([x for x in self.array[1:]], [2, 3, 4])
+        self.assertEqual([x for x in self.array[:3]], [1, 2, 3])
+        self.assertEqual([x for x in self.array[:]], [1, 2, 3, 4])
+        self.assertEqual([x for x in self.array[1:3:2]], [2])
+        self.assertEqual([x for x in self.array[::-1]], [4, 3, 2, 1])
 
     def test_index_of(self) -> None:
         self.array.add(1)
@@ -146,6 +145,10 @@ class ArrayTest(unittest.TestCase):
         self.array.add(1)
         self.array.clear()
         self.assertEqual(len(self.array), 0)
+
+    def test_reverse(self) -> None:
+        self.array.add_all([1, 2, 3, 4])
+        self.assertEqual([*reversed(self.array)], [4, 3, 2, 1])
 
 
 if __name__ == "__main__":
