@@ -14,3 +14,11 @@ class Comparable(Protocol):
 
 def default_compare(a: Comparable, b: Comparable) -> bool:
     return a < b
+
+
+def default_compare_to(a: Comparable, b: Comparable) -> int:
+    if a < b:
+        return -1
+    if a > b:
+        return 1
+    return 0
