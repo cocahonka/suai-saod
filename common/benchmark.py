@@ -3,10 +3,10 @@ from __future__ import annotations
 import inspect
 import timeit
 from abc import ABC
-from typing import Any, Callable, List, Tuple, get_type_hints
+from typing import Any, Callable, List, Optional, Tuple, Union, get_type_hints
 
 VoidCallback = Callable[[], None]
-BenchmarkCallback = Tuple[VoidCallback, int]
+BenchmarkCallback = Union[Tuple[VoidCallback, int], Tuple[VoidCallback, int, int]]
 BenchmarkMethod = Callable[["Benchmark"], BenchmarkCallback]
 
 
@@ -22,9 +22,17 @@ class Benchmark(ABC):
             result: BenchmarkCallback = method(instance)
             callback: VoidCallback
             iterations: int
-            callback, iterations = result
+            count_of_elements: Optional[int] = None
 
-            print(f"Running {cls.__name__}.{method.__name__} with {iterations} iterations...")
+            if len(result) == 2:
+                callback, iterations = result
+            else:
+                callback, iterations, count_of_elements = result
+
+            postfix: str = f" and {count_of_elements} elements" if count_of_elements else ""
+            print(
+                f"Running {cls.__name__}.{method.__name__} with {iterations} iterations{postfix}..."
+            )
             time_taken = timeit.timeit(callback, number=iterations)
             print(
                 f"Completed {iterations} iterations in {time_taken:.6f} seconds",
