@@ -1,6 +1,5 @@
-from typing import Callable, TypeVar
+from typing import Callable, Iterator, List, Tuple, TypeVar
 
-from lab2.linked_list.doubly_linked_list import DoublyLinkedList
 from lab2.linked_list.linked_list import ILinkedList
 
 T = TypeVar("T")
@@ -8,41 +7,34 @@ T = TypeVar("T")
 
 def counting_sort_through_public_api(
     linked_list: ILinkedList[T],
-    key: Callable[[T], int],
+    key_selector: Callable[[T], int],
+    ascending: bool = True,
 ) -> None:
-    if linked_list.is_empty():
+    if not linked_list:
         return
 
-    min_key = key(linked_list.element_at(0))
-    max_key = key(linked_list.element_at(0))
+    keys: List[int] = list(map(key_selector, linked_list))
 
-    for i in range(1, len(linked_list)):
-        k = key(linked_list.element_at(i))
-        if k < min_key:
-            min_key = k
-        if k > max_key:
-            max_key = k
+    min_key = max_key = keys[0]
+    [(min_key := min(min_key, key), max_key := max(max_key, key)) for key in keys]
 
-    count = [0] * (max_key - min_key + 1)
+    frequency: List[int] = [0] * (max_key - min_key + 1)
+    for key in keys:
+        frequency[key - min_key] += 1
 
-    for i in range(len(linked_list)):
-        count[key(linked_list.element_at(i)) - min_key] += 1
+    positions: List[int] = frequency.copy()
+    for i in range(1, len(positions)):
+        positions[i] += positions[i - 1]
 
-    sorted_elements = []
-    for i in range(len(count)):
-        while count[i] > 0:
-            for j in range(len(linked_list)):
-                if key(linked_list.element_at(j)) == i + min_key:
-                    sorted_elements.append(linked_list.element_at(j))
-                    break
-            count[i] -= 1
+    sorted_array: List[T] = [element for element in linked_list]
+    iterator: Iterator[Tuple[T, int]] = zip(linked_list, keys)
+    if not ascending:
+        iterator = reversed(list(iterator))
 
-    for i, value in enumerate(sorted_elements):
-        linked_list.update(i, value)
+    for element, key in iterator:
+        shifted_key = key - min_key
+        positions[shifted_key] -= 1
+        sorted_array[positions[shifted_key]] = element
 
-
-if __name__ == "__main__":
-    linked_list: ILinkedList[int] = DoublyLinkedList()
-    [linked_list.add(x) for x in [-3, -1, 4, 2, 0]]
-    counting_sort_through_public_api(linked_list, lambda x: x)
-    print([x for x in linked_list])
+    linked_list.clear()
+    [linked_list.add(element) for element in sorted_array]
