@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 from random import randint
-from typing import Callable, Generator, List
+from typing import Callable, Generator, List, Optional
 
 from common.extra_typing import override
 from lab2.linked_list.doubly_linked_list import DoublyLinkedList
@@ -175,9 +175,11 @@ class SortingTest(unittest.TestCase):
     def _random_list_generator(
         self,
         size: int,
-        upper_bound: int = 100_000,
-        lower_bound: int = -100_000,
+        upper_bound: Optional[int] = None,
+        lower_bound: Optional[int] = None,
     ) -> Generator[List[int]]:
+        upper_bound = upper_bound or self.random_upper
+        lower_bound = lower_bound or self.random_lower
         while True:
             yield [randint(lower_bound, upper_bound) for _ in range(size)]
 
