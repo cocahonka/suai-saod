@@ -1,7 +1,8 @@
 import unittest
 from random import randint
-from typing import Callable, Generator, List, Optional
+from typing import Callable, List, Optional
 
+from common.comparable import default_compare_to
 from common.extra_typing import override
 from lab2.linked_list.doubly_linked_list import DoublyLinkedList
 from lab2.linked_list.linked_list import ILinkedList
@@ -19,16 +20,15 @@ class SearchTest(unittest.TestCase):
         self.random_upper: int = 50
         self.random_lower: int = -50
 
-    def _sorted_random_list_generator(
+    def _get_random_sorted_list(
         self,
         size: int,
         upper_bound: Optional[int] = None,
         lower_bound: Optional[int] = None,
-    ) -> Generator[List[int]]:
+    ) -> List[int]:
         upper_bound = upper_bound or self.random_upper
         lower_bound = lower_bound or self.random_lower
-        while True:
-            yield sorted([randint(lower_bound, upper_bound) for _ in range(size)])
+        return sorted([randint(lower_bound, upper_bound) for _ in range(size)])
 
     def _get_expected_index(
         self,
@@ -58,16 +58,13 @@ class SearchTest(unittest.TestCase):
         for test_case in standard_test_cases:
             sequence: SearchSequence[int] = sequence_transformer(test_case)
             for target in test_case + [-99, 99]:
-                result: int = search_func(sequence, target, lambda x, y: x < y)
+                result: int = search_func(sequence, target, default_compare_to)
                 self.assertIn(result, self._get_expected_index(test_case, target))
 
         for _ in range(self.random_iteration):
-            sequence = sequence_transformer(
-                next(self._sorted_random_list_generator(self.random_size))
-            )
+            sequence = sequence_transformer(self._get_random_sorted_list(self.random_size))
             target = randint(self.random_lower, self.random_upper)
-            result = search_func(sequence, target, lambda x, y: x < y)
-
+            result = search_func(sequence, target, default_compare_to)
             self.assertIn(result, self._get_expected_index(sequence, target))
 
     def _convert_to_linked_list(self, array: List[int]) -> ILinkedList[int]:
