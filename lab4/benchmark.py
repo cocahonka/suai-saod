@@ -2,7 +2,7 @@ from random import randint, sample
 from typing import List
 
 from common import benchmark
-from common.benchmark import *
+from common.benchmark import Benchmark, BenchmarkCallback
 from common.extra_typing import override
 from lab2.linked_list.doubly_linked_list import DoublyLinkedList
 from lab4.algs.arrays.insertion_sort import insertion_sort

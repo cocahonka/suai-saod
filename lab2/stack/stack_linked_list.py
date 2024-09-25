@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, Final, Generic, List, Optional, Union
+from typing import Final, Generic, Optional
 
 from common.extra_typing import override
-from lab2.stack.not_growable_stack import NotGrowableStack
-from lab2.stack.stack import IStack, StackEmptyException, StackOverflowException, T
+from lab2.stack.stack import IStack, StackEmptyException, T
 
 
 @dataclass

@@ -1,17 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Final, Generic, List, Optional, cast
+from typing import Final, Generic, Optional, cast
 
 from common.extra_typing import contravariant_args, override
-from lab3.models.student import Student
-from lab3.serializers.ordered_binary_tree_serializer import OrderedBinaryTreeSerializer
-from lab3.trees.ordered_binary_tree import (
-    BinaryNode,
-    IOrderedBinaryTree,
-    T,
-    TraversalType,
-)
+from lab3.trees.ordered_binary_tree import BinaryNode, T
 from lab3.trees.search_tree import SearchTree
 
 

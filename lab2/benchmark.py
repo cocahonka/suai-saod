@@ -4,11 +4,10 @@ from random import randint, sample
 from typing import Any, List
 
 from common import benchmark
-from common.benchmark import *
+from common.benchmark import Benchmark, BenchmarkCallback
 from common.extra_typing import override
 from lab2.linked_list.doubly_linked_list import DoublyLinkedList
 from lab2.linked_list.linked_list import ILinkedList
-from lab2.stack.not_growable_stack import NotGrowableStack
 from lab2.stack.stack import IStack
 from lab2.stack.stack_linked_list import StackLinkedList
 

@@ -4,7 +4,7 @@ from random import randint, sample
 from typing import List
 
 from common import benchmark
-from common.benchmark import *
+from common.benchmark import Benchmark, BenchmarkCallback
 from common.extra_typing import override
 from lab3.serializers.ordered_binary_tree_serializer import OrderedBinaryTreeSerializer
 from lab3.trees.avl_tree import AVLTree

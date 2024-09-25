@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from random import randint
 from typing import Callable, Final, Generic, Iterator, Optional, Tuple
 
 from common.comparable import Comparable
