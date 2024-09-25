@@ -83,7 +83,6 @@ def linked_list_sort_example_by_key(
 
 
 def main() -> None:
-    # TODO: Fix type hinting for gnome_sort_through_node
     functions: Dict[str, Callable[..., object]] = {
         "Insertion sort": lambda: array_sort_example(
             insertion_sort,
