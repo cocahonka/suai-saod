@@ -80,15 +80,23 @@ class SearchTest(unittest.TestCase):
         dynamic_array.add_all(array)
         return dynamic_array
 
-    def test_fibonacci_search(self) -> None:
+    def test_fibonacci_search_list(self) -> None:
         self._test_search(fibonacci_search, list)
-        self._test_search(fibonacci_search, self._convert_to_dynamic_array)
+
+    def test_fibonacci_search_linked_list(self) -> None:
         self._test_search(fibonacci_search, self._convert_to_linked_list)
 
-    def test_interpolation_search(self) -> None:
+    def test_fibonacci_search_dynamic_array(self) -> None:
+        self._test_search(fibonacci_search, self._convert_to_dynamic_array)
+
+    def test_interpolation_search_list(self) -> None:
         self._test_search(interpolation_search, list)
-        self._test_search(interpolation_search, self._convert_to_dynamic_array)
+
+    def test_interpolation_search_linked_list(self) -> None:
         self._test_search(interpolation_search, self._convert_to_linked_list)
+
+    def test_interpolation_search_dynamic_array(self) -> None:
+        self._test_search(interpolation_search, self._convert_to_dynamic_array)
 
 
 if __name__ == "__main__":
