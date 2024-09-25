@@ -15,7 +15,7 @@ from lab5.main import SearchFunction, SearchSequence
 class SearchTest(unittest.TestCase):
     @override
     def setUp(self) -> None:
-        self.random_iteration: int = 100
+        self.random_iteration: int = 1000
         self.random_size: int = 100
         self.random_upper: int = 50
         self.random_lower: int = -50
@@ -47,7 +47,10 @@ class SearchTest(unittest.TestCase):
         standard_test_cases: List[List[int]] = [
             [],
             [1],
+            [1, 2],
             [1, 1],
+            [1, 2, 3],
+            [1, 2, 3, 4],
             [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             [1, 3, 5, 7, 9, 11, 13, 15, 17, 19],
             [1, 6, 8, 8, 9, 17, 234, 234, 234, 812],
