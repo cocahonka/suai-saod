@@ -131,10 +131,10 @@ def main() -> None:
     some_list: DynamicArray[Book] = DynamicArray()
     some_list.add_all(
         [
-            Book("A", "B", 1, 1.2, "1234"),
-            Book("B", "C", 2, 2.3, "2345"),
-            Book("Z", "D", 3, 3.4, "3456"),
-            Book("A", "E", 4, 4.5, "4567"),
+            Book("Aron", "B", 1, 1.2, "1234"),
+            Book("Bill", "C", 2, 2.3, "2345"),
+            Book("Zon", "D", 3, 3.4, "3456"),
+            Book("Allay", "E", 4, 4.5, "4567"),
         ]
     )
     print("Before sorting:")
@@ -147,9 +147,9 @@ def main() -> None:
     for i, book in enumerate(some_list):
         print(i, book)
 
-    print("Searching for book with 'A' author:")
+    print("Searching for book with 'Ar' author:")
     index: int = fibonacci_search_by(
-        some_list, "A", lambda book: book.author, lambda a, b: default_compare_to(b, a)
+        some_list, "Ar", lambda book: book.author[:2], lambda a, b: default_compare_to(b, a)
     )
     print(f"Found at index: {index}")
 
