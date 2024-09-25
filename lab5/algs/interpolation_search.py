@@ -4,7 +4,7 @@ from typing import TypeVar, Union
 
 from common.comparable import default_compare_to
 from lab2.linked_list.doubly_linked_list import DoubleNode, DoublyLinkedList
-from lab5.main import Comparator, KeySelector, SearchSequence, T
+from lab5.type_aliases import SearchComparator, SearchKeySelector, SearchSequence, T
 
 N = TypeVar("N", bound=Union[int, float])
 
@@ -12,7 +12,7 @@ N = TypeVar("N", bound=Union[int, float])
 def interpolation_search(
     sequence: SearchSequence[N],
     target: N,
-    compare: Comparator[N] = default_compare_to,
+    compare: SearchComparator[N] = default_compare_to,
 ) -> int:
     if isinstance(sequence, DoublyLinkedList):
         return _interpolation_search_nodes(sequence, target, lambda x: x, compare)
@@ -23,8 +23,8 @@ def interpolation_search(
 def interpolation_search_by(
     sequence: SearchSequence[T],
     target: N,
-    key_selector: KeySelector[T, N],
-    compare: Comparator[N] = default_compare_to,
+    key_selector: SearchKeySelector[T, N],
+    compare: SearchComparator[N] = default_compare_to,
 ) -> int:
     if not sequence:
         return -1
@@ -58,8 +58,8 @@ def interpolation_search_by(
 def _interpolation_search_nodes(
     sequence: DoublyLinkedList[T],
     target: N,
-    key_selector: KeySelector[T, N],
-    compare: Comparator[N] = default_compare_to,
+    key_selector: SearchKeySelector[T, N],
+    compare: SearchComparator[N] = default_compare_to,
 ) -> int:
     if sequence._head is None or sequence._tail is None:
         return -1

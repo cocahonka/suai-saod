@@ -9,7 +9,7 @@ from lab2.linked_list.linked_list import ILinkedList
 from lab4.arrays.dynamic_array import DynamicArray
 from lab5.algs.fibonacci_search import fibonacci_search
 from lab5.algs.interpolation_search import interpolation_search
-from lab5.main import SearchFunction, SearchSequence
+from lab5.type_aliases import SearchFunction, SearchSequence
 
 
 class SearchTest(unittest.TestCase):

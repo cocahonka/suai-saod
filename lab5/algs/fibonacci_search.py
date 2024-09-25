@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from common.comparable import default_compare_to
 from lab2.linked_list.doubly_linked_list import DoubleNode, DoublyLinkedList
-from lab5.main import C, Comparator, KeySelector, SearchSequence, T
+from lab5.type_aliases import C, SearchComparator, SearchKeySelector, SearchSequence, T
 
 
 def fibonacci_search(
     sequence: SearchSequence[C],
     target: C,
-    compare: Comparator[C] = default_compare_to,
+    compare: SearchComparator[C] = default_compare_to,
 ) -> int:
     if isinstance(sequence, DoublyLinkedList):
         return _fibonacci_search_nodes(sequence, target, lambda x: x, compare)
@@ -19,8 +19,8 @@ def fibonacci_search(
 def fibonacci_search_by(
     sequence: SearchSequence[T],
     target: C,
-    key_selector: KeySelector[T, C],
-    compare: Comparator[C] = default_compare_to,
+    key_selector: SearchKeySelector[T, C],
+    compare: SearchComparator[C] = default_compare_to,
 ) -> int:
     fib, fib_1, fib_2, n = 1, 1, 0, len(sequence)
 
@@ -52,8 +52,8 @@ def fibonacci_search_by(
 def _fibonacci_search_nodes(
     sequence: DoublyLinkedList[T],
     target: C,
-    key_selector: KeySelector[T, C],
-    compare: Comparator[C] = default_compare_to,
+    key_selector: SearchKeySelector[T, C],
+    compare: SearchComparator[C] = default_compare_to,
 ) -> int:
     if sequence._head is None:
         return -1
