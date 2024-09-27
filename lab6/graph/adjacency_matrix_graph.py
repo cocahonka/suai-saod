@@ -14,6 +14,7 @@ from lab6.graph.graph import (
 T = TypeVar("T")
 
 
+# TODO: Rethink _get_vertex_index, get_successors, get_predecessors, get_neighbors methods
 class AdjacencyMatrixGraph(IGraph[T, Weight]):
     def __init__(self, is_directed: bool = False) -> None:
         self._is_directed: bool = is_directed
