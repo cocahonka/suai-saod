@@ -1,4 +1,8 @@
+from __future__ import annotations
+
 import unittest
+from dataclasses import dataclass
+from functools import total_ordering
 from typing import List
 
 from common.extra_typing import override
@@ -9,6 +13,7 @@ from lab6.graph.graph import (
     SelfConnectionError,
     VertexNotFoundError,
 )
+from lab6.serializers.graph_serializer import GraphSerializer
 
 
 class GraphTest(unittest.TestCase):
@@ -858,6 +863,101 @@ class GraphTest(unittest.TestCase):
         self.assertListEqual(
             self.undirected_graph.get_all_paths("A", "A"),
             [["A"]],
+        )
+
+
+class GraphSerializationTests(unittest.TestCase):
+    @dataclass
+    @total_ordering
+    class Item:
+        value: int
+        some_text: str = "default"
+
+        def __lt__(self, other: GraphSerializationTests.Item) -> bool:
+            return self.value < other.value
+
+        def __eq__(self, other: object) -> bool:
+            return isinstance(other, GraphSerializationTests.Item) and self.value == other.value
+
+    @override
+    def setUp(self) -> None:
+        self.directed_graph_filename: str = "directed_graph.json"
+        self.undirected_graph_filename: str = "undirected_graph.json"
+
+    @override
+    def tearDown(self) -> None:
+        try:
+            import os
+
+            os.remove(self.directed_graph_filename)
+            os.remove(self.undirected_graph_filename)
+        except FileNotFoundError:
+            pass
+
+    def test_literal_in_adjacency_matrix_graph(self) -> None:
+        def _test(graph: AdjacencyMatrixGraph[str, int], filename: str) -> None:
+            graph.add_all(["A", "B", "C", "D", "E"])
+            graph.connect_all(
+                [
+                    ("A", "B", 1),
+                    ("A", "C", 2),
+                    ("B", "D", 3),
+                    ("C", "E", 4),
+                    ("D", "E", 5),
+                ]
+            )
+
+            GraphSerializer.save_graph_to_file(graph, filename)
+
+            graph_copy: AdjacencyMatrixGraph[str, int] = graph.copy()
+            graph_copy.clear()
+
+            GraphSerializer.load_graph_from_file(graph_copy, filename, str)
+
+            self.assertListEqual(graph.get_edges(), graph_copy.get_edges())
+
+        _test(AdjacencyMatrixGraph[str, int](True), self.directed_graph_filename)
+        _test(AdjacencyMatrixGraph[str, int](False), self.undirected_graph_filename)
+
+    def test_item_in_adjacency_matrix_graph(self) -> None:
+        def _test(
+            graph: AdjacencyMatrixGraph[GraphSerializationTests.Item, int], filename: str
+        ) -> None:
+            graph.add_all(
+                [
+                    GraphSerializationTests.Item(1, "one"),
+                    GraphSerializationTests.Item(2, "two"),
+                    GraphSerializationTests.Item(3, "three"),
+                    GraphSerializationTests.Item(4, "four"),
+                    GraphSerializationTests.Item(5, "five"),
+                ]
+            )
+            graph.connect_all(
+                [
+                    (GraphSerializationTests.Item(1), GraphSerializationTests.Item(2), 1),
+                    (GraphSerializationTests.Item(1), GraphSerializationTests.Item(3), 2),
+                    (GraphSerializationTests.Item(2), GraphSerializationTests.Item(4), 3),
+                    (GraphSerializationTests.Item(3), GraphSerializationTests.Item(5), 4),
+                    (GraphSerializationTests.Item(4), GraphSerializationTests.Item(5), 5),
+                ]
+            )
+
+            GraphSerializer.save_graph_to_file(graph, filename)
+
+            graph_copy: AdjacencyMatrixGraph[GraphSerializationTests.Item, int] = graph.copy()
+            graph_copy.clear()
+
+            GraphSerializer.load_graph_from_file(graph_copy, filename, GraphSerializationTests.Item)
+
+            self.assertListEqual(graph.get_edges(), graph_copy.get_edges())
+
+        _test(
+            AdjacencyMatrixGraph[GraphSerializationTests.Item, int](True),
+            self.directed_graph_filename,
+        )
+        _test(
+            AdjacencyMatrixGraph[GraphSerializationTests.Item, int](False),
+            self.undirected_graph_filename,
         )
 
 
