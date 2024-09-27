@@ -748,6 +748,31 @@ class GraphTest(unittest.TestCase):
         self.undirected_graph.disconnect("C", "A")
         self.assertFalse(self.undirected_graph.is_cyclic)
 
+    def test_get_path(self) -> None:
+        def _test(graph: IGraph[str, int]) -> None:
+            graph.add_all(["A", "B", "C", "D", "E", "F", "G", "H", "I"])
+            graph.connect_all(
+                [
+                    ("A", "F", 0),
+                    ("A", "B", 0),
+                    ("A", "D", 0),
+                    ("F", "A", 0),
+                    ("F", "G", 0),
+                    ("B", "C", 0),
+                    ("D", "E", 0),
+                    ("H", "I", 0),
+                ]
+            )
+
+            self.assertListEqual(graph.get_path("A", "C"), ["A", "B", "C"])
+            self.assertListEqual(graph.get_path("A", "E"), ["A", "D", "E"])
+            self.assertListEqual(graph.get_path("A", "G"), ["A", "F", "G"])
+            self.assertListEqual(graph.get_path("A", "I"), [])
+            self.assertListEqual(graph.get_path("A", "A"), ["A"])
+
+        _test(self.directed_graph)
+        _test(self.undirected_graph)
+
 
 if __name__ == "__main__":
     unittest.main()
