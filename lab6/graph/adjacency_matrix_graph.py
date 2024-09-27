@@ -295,7 +295,48 @@ class AdjacencyMatrixGraph(IGraph[T, Weight]):
 
     @override
     def get_all_paths(self, from_vertex: T, to_vertex: T) -> List[List[T]]:
-        raise NotImplementedError
+        visited: List[bool] = [False] * len(self._vertices)
+        paths: List[List[T]] = []
+        current_path: List[T] = []
+
+        self._get_all_paths(
+            self._vzip(from_vertex),
+            self._vzip(to_vertex),
+            visited,
+            paths,
+            current_path,
+        )
+
+        return paths
+
+    def _get_all_paths(
+        self,
+        from_vertex: Vertex[T],
+        to_vertex: Vertex[T],
+        visited: List[bool],
+        paths: List[List[T]],
+        current_path: List[T],
+    ) -> None:
+        current_path.append(from_vertex[1])
+
+        if from_vertex == to_vertex:
+            paths.append(list(current_path))
+        else:
+            visited[from_vertex[0]] = True
+
+            for index, successor in self._get_successors(from_vertex):
+                if not visited[index]:
+                    self._get_all_paths(
+                        (index, successor),
+                        to_vertex,
+                        visited,
+                        paths,
+                        current_path,
+                    )
+
+            visited[from_vertex[0]] = False
+
+        current_path.pop()
 
     @override
     def traverse(
@@ -402,12 +443,15 @@ class AdjacencyMatrixGraph(IGraph[T, Weight]):
 
     @override
     def __str__(self) -> str:
-        vertices_str: str = ", ".join(map(str, self._vertices))
-        matrix_str: str = "\n".join(
-            [
-                " ".join(["-" if weight is None else str(weight) for weight in line])
-                for line in self._adjacency_matrix
-            ]
-        )
+        if self.is_empty:
+            return f"{self.__class__.__name__} is empty"
 
-        return f"Vertices: {vertices_str}\nAdjacency Matrix:\n{matrix_str}"
+        str_vertices: List[str] = list(map(str, self._vertices))
+        max_length: int = max(map(len, str_vertices), default=0)
+
+        str_matrix: List[str] = [
+            f"{vertex:<{max_length}} | {' | '.join(str(weight) if weight is not None else '-' for weight in line)} |"
+            for vertex, line in zip(str_vertices, self._adjacency_matrix)
+        ]
+
+        return f"{self.__class__.__name__}:\n" + "\n".join(str_matrix)

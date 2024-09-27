@@ -773,6 +773,93 @@ class GraphTest(unittest.TestCase):
         _test(self.directed_graph)
         _test(self.undirected_graph)
 
+    def test_get_all_paths(self) -> None:
+        self.directed_graph.add_all(["A", "B", "C", "D", "E", "F", "G", "H", "I"])
+        self.directed_graph.connect_all(
+            [
+                ("A", "F", 0),
+                ("A", "B", 0),
+                ("A", "D", 0),
+                ("F", "A", 0),
+                ("F", "G", 0),
+                ("B", "C", 0),
+                ("B", "E", 0),
+                ("D", "E", 0),
+                ("D", "C", 0),
+                ("G", "E", 0),
+                ("H", "I", 0),
+            ]
+        )
+        self.assertListEqual(
+            self.directed_graph.get_all_paths("A", "C"),
+            [["A", "B", "C"], ["A", "D", "C"]],
+        )
+
+        self.assertListEqual(
+            self.directed_graph.get_all_paths("A", "E"),
+            [["A", "B", "E"], ["A", "D", "E"], ["A", "F", "G", "E"]],
+        )
+
+        self.assertListEqual(
+            self.directed_graph.get_all_paths("A", "I"),
+            [],
+        )
+
+        self.assertListEqual(
+            self.directed_graph.get_all_paths("A", "A"),
+            [["A"]],
+        )
+
+        self.undirected_graph.add_all(["A", "B", "C", "D", "E", "F", "G", "H", "I"])
+        self.undirected_graph.connect_all(
+            [
+                ("A", "F", 0),
+                ("A", "B", 0),
+                ("A", "D", 0),
+                ("F", "A", 0),
+                ("F", "G", 0),
+                ("B", "C", 0),
+                ("B", "E", 0),
+                ("D", "E", 0),
+                ("D", "C", 0),
+                ("G", "E", 0),
+                ("H", "I", 0),
+            ]
+        )
+
+        self.assertListEqual(
+            self.undirected_graph.get_all_paths("A", "C"),
+            [
+                ["A", "B", "C"],
+                ["A", "B", "E", "D", "C"],
+                ["A", "D", "C"],
+                ["A", "D", "E", "B", "C"],
+                ["A", "F", "G", "E", "B", "C"],
+                ["A", "F", "G", "E", "D", "C"],
+            ],
+        )
+
+        self.assertListEqual(
+            self.undirected_graph.get_all_paths("A", "F"),
+            [
+                ["A", "B", "C", "D", "E", "G", "F"],
+                ["A", "B", "E", "G", "F"],
+                ["A", "D", "C", "B", "E", "G", "F"],
+                ["A", "D", "E", "G", "F"],
+                ["A", "F"],
+            ],
+        )
+
+        self.assertListEqual(
+            self.undirected_graph.get_all_paths("A", "I"),
+            [],
+        )
+
+        self.assertListEqual(
+            self.undirected_graph.get_all_paths("A", "A"),
+            [["A"]],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
