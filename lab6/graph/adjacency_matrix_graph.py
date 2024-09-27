@@ -267,28 +267,28 @@ class AdjacencyMatrixGraph(IGraph[T, Weight]):
     @override
     def get_path(self, from_vertex: T, to_vertex: T) -> List[T]:
         visited: List[bool] = [False] * len(self._vertices)
-        path: List[Vertex[T]] = []
+        path: List[T] = []
 
         self._get_path(self._vzip(from_vertex), self._vzip(to_vertex), visited, path)
 
-        return [vertex for _, vertex in path]
+        return path
 
     def _get_path(
         self,
         from_vertex: Vertex[T],
         to_vertex: Vertex[T],
         visited: List[bool],
-        path: List[Vertex[T]],
+        path: List[T],
     ) -> bool:
         if from_vertex == to_vertex:
-            path.insert(0, from_vertex)
+            path.insert(0, from_vertex[1])
             return True
 
         visited[from_vertex[0]] = True
 
         for index, successor in self._get_successors(from_vertex):
             if not visited[index] and self._get_path((index, successor), to_vertex, visited, path):
-                path.insert(0, from_vertex)
+                path.insert(0, from_vertex[1])
                 return True
 
         return False
