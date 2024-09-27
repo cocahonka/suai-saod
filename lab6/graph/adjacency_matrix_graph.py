@@ -12,9 +12,9 @@ from lab6.graph.graph import (
 )
 
 T = TypeVar("T")
+Vertex = Tuple[int, T]
 
 
-# TODO: Rethink _get_vertex_index, get_successors, get_predecessors, get_neighbors methods
 class AdjacencyMatrixGraph(IGraph[T, Weight]):
     def __init__(self, is_directed: bool = False) -> None:
         self._is_directed: bool = is_directed
@@ -26,6 +26,9 @@ class AdjacencyMatrixGraph(IGraph[T, Weight]):
             return self._vertices.index(vertex)
         except ValueError as e:
             raise VertexNotFoundError(vertex) from e
+
+    def _vzip(self, vertex: T) -> Vertex[T]:
+        return self._get_vertex_index(vertex), vertex
 
     @property
     @override
@@ -40,27 +43,33 @@ class AdjacencyMatrixGraph(IGraph[T, Weight]):
 
         for index, vertex in enumerate(self._vertices):
             if not black[index]:
-                if self._is_cyclic(index, vertex, black, gray):
+                if self._is_cyclic(index, (index, vertex), black, gray):
                     return True
 
         return False
 
-    def _is_cyclic(self, from_index: int, vertex: T, black: List[bool], gray: List[bool]) -> bool:
-        black[self._get_vertex_index(vertex)] = True
-        gray[self._get_vertex_index(vertex)] = True
+    def _is_cyclic(
+        self,
+        from_index: int,
+        vertex: Vertex[T],
+        black: List[bool],
+        gray: List[bool],
+    ) -> bool:
+        vertex_index: int = vertex[0]
+        black[vertex_index] = True
+        gray[vertex_index] = True
 
-        for successor in self.get_successors(vertex):
-            successor_index: int = self._get_vertex_index(successor)
-            if not self._is_directed and successor_index == from_index:
+        for index, successor in self._get_successors(vertex):
+            if not self._is_directed and index == from_index:
                 continue
 
-            if not black[successor_index]:
-                if self._is_cyclic(self._get_vertex_index(vertex), successor, black, gray):
+            if not black[index]:
+                if self._is_cyclic(vertex_index, (index, successor), black, gray):
                     return True
-            elif gray[successor_index]:
+            elif gray[index]:
                 return True
 
-        gray[self._get_vertex_index(vertex)] = False
+        gray[vertex_index] = False
 
         return False
 
@@ -72,16 +81,16 @@ class AdjacencyMatrixGraph(IGraph[T, Weight]):
 
         visited: List[bool] = [False] * len(self._vertices)
 
-        self._is_connected(self._vertices[0], visited)
+        self._is_connected((0, self._vertices[0]), visited)
 
         return all(visited)
 
-    def _is_connected(self, vertex: T, visited: List[bool]) -> None:
-        visited[self._get_vertex_index(vertex)] = True
+    def _is_connected(self, vertex: Vertex[T], visited: List[bool]) -> None:
+        visited[vertex[0]] = True
 
-        for neighbor in self.get_neighbors(vertex):
-            if not visited[self._get_vertex_index(neighbor)]:
-                self._is_connected(neighbor, visited)
+        for index, neighbor in self._get_neighbors(vertex):
+            if not visited[index]:
+                self._is_connected((index, neighbor), visited)
 
     @property
     @override
@@ -215,30 +224,34 @@ class AdjacencyMatrixGraph(IGraph[T, Weight]):
 
     @override
     def get_predecessors(self, to_vertex: T) -> List[T]:
-        to_index: int = self._get_vertex_index(to_vertex)
+        return [vertex for _, vertex in self._get_predecessors(self._vzip(to_vertex))]
 
+    def _get_predecessors(self, to_vertex: Vertex[T]) -> List[Vertex[T]]:
         return [
-            self._vertices[i]
+            (i, self._vertices[i])
             for i, line in enumerate(self._adjacency_matrix)
-            if line[to_index] is not None
+            if line[to_vertex[0]] is not None
         ]
 
     @override
     def get_successors(self, from_vertex: T) -> List[T]:
-        from_index: int = self._get_vertex_index(from_vertex)
+        return [vertex for _, vertex in self._get_successors(self._vzip(from_vertex))]
 
+    def _get_successors(self, from_vertex: Vertex[T]) -> List[Vertex[T]]:
         return [
-            self._vertices[i]
-            for i, weight in enumerate(self._adjacency_matrix[from_index])
+            (i, self._vertices[i])
+            for i, weight in enumerate(self._adjacency_matrix[from_vertex[0]])
             if weight is not None
         ]
 
     @override
     def get_neighbors(self, vertex: T) -> List[T]:
-        seen: Set[T] = set()
-        neighbors: List[T] = self.get_predecessors(vertex) + self.get_successors(vertex)
+        return [neighbor for _, neighbor in self._get_neighbors(self._vzip(vertex))]
+
+    def _get_neighbors(self, vertex: Vertex[T]) -> List[Vertex[T]]:
+        seen: Set[Vertex[T]] = set()
+        neighbors: List[Vertex[T]] = self._get_predecessors(vertex) + self._get_successors(vertex)
         return [x for x in neighbors if x not in seen and not seen.add(x)]  # type: ignore[func-returns-value]
-        return list(self.get_predecessors(vertex) + self.get_successors(vertex))
 
     @override
     def get_edges(self) -> List[Tuple[T, T, Optional[Weight]]]:
@@ -275,43 +288,42 @@ class AdjacencyMatrixGraph(IGraph[T, Weight]):
         visited: List[bool] = [False] * len(self._vertices)
 
         if start_vertex is not None:
-            method(start_vertex, visited, action)
+            method(self._vzip(start_vertex), visited, action)
 
         for index, vertex in enumerate(self._vertices):
             if not visited[index]:
-                method(vertex, visited, action)
+                method((index, vertex), visited, action)
 
     def _dfs(
         self,
-        vertex: T,
+        vertex: Vertex[T],
         visited: List[bool],
         action: Callable[[T], None],
     ) -> None:
-        visited[self._get_vertex_index(vertex)] = True
-        action(vertex)
+        visited[vertex[0]] = True
+        action(vertex[1])
 
-        for successor in self.get_successors(vertex):
-            if not visited[self._get_vertex_index(successor)]:
-                self._dfs(successor, visited, action)
+        for index, successor in self._get_successors(vertex):
+            if not visited[index]:
+                self._dfs((index, successor), visited, action)
 
     def _bfs(
         self,
-        vertex: T,
+        vertex: Vertex[T],
         visited: List[bool],
         action: Callable[[T], None],
     ) -> None:
-        visited[self._get_vertex_index(vertex)] = True
-        queue: List[T] = [vertex]
+        visited[vertex[0]] = True
+        queue: List[Vertex[T]] = [vertex]
 
         while queue:
             vertex = queue.pop(0)
-            action(vertex)
+            action(vertex[1])
 
-            for successor in self.get_successors(vertex):
-                successor_index: int = self._get_vertex_index(successor)
-                if not visited[successor_index]:
-                    visited[successor_index] = True
-                    queue.append(successor)
+            for index, successor in self._get_successors(vertex):
+                if not visited[index]:
+                    visited[index] = True
+                    queue.append((index, successor))
 
     @override
     def generator(
@@ -328,33 +340,32 @@ class AdjacencyMatrixGraph(IGraph[T, Weight]):
         visited: List[bool] = [False] * len(self._vertices)
 
         if start_vertex is not None:
-            yield from method(start_vertex, visited)
+            yield from method(self._vzip(start_vertex), visited)
 
         for index, vertex in enumerate(self._vertices):
             if not visited[index]:
-                yield from method(vertex, visited)
+                yield from method((index, vertex), visited)
 
-    def _dfs_generator(self, vertex: T, visited: List[bool]) -> Iterator[T]:
-        visited[self._get_vertex_index(vertex)] = True
-        yield vertex
+    def _dfs_generator(self, vertex: Vertex[T], visited: List[bool]) -> Iterator[T]:
+        visited[vertex[0]] = True
+        yield vertex[1]
 
-        for successor in self.get_successors(vertex):
-            if not visited[self._get_vertex_index(successor)]:
-                yield from self._dfs_generator(successor, visited)
+        for index, successor in self._get_successors(vertex):
+            if not visited[index]:
+                yield from self._dfs_generator((index, successor), visited)
 
-    def _bfs_generator(self, vertex: T, visited: List[bool]) -> Iterator[T]:
-        visited[self._get_vertex_index(vertex)] = True
-        queue: List[T] = [vertex]
+    def _bfs_generator(self, vertex: Vertex[T], visited: List[bool]) -> Iterator[T]:
+        visited[vertex[0]] = True
+        queue: List[Vertex[T]] = [vertex]
 
         while queue:
             vertex = queue.pop(0)
-            yield vertex
+            yield vertex[1]
 
-            for successor in self.get_successors(vertex):
-                successor_index: int = self._get_vertex_index(successor)
-                if not visited[successor_index]:
-                    visited[successor_index] = True
-                    queue.append(successor)
+            for index, successor in self._get_successors(vertex):
+                if not visited[index]:
+                    visited[index] = True
+                    queue.append((index, successor))
 
     @override
     def copy(self) -> AdjacencyMatrixGraph[T, Weight]:
