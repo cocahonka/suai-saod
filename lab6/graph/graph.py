@@ -21,17 +21,12 @@ class EdgeNotFoundError(GraphError, Generic[T]):
         super().__init__(f"Edge from {from_vertex} to {to_vertex} not found in the graph.")
 
 
-class CyclicGraphError(GraphError):
-    def __init__(self) -> None:
-        super().__init__("Operation is not allowed: the graph must remain acyclic.")
-
-
 class GraphTraversalType(Enum):
     BREADTH_FIRST = auto()
     DEPTH_FIRST = auto()
 
 
-class IGraph(ABC, Generic[T]):
+class IGraph(ABC, Generic[T, Weight]):
     @property
     @abstractmethod
     def is_directed(self) -> bool: ...
@@ -134,7 +129,7 @@ class IGraph(ABC, Generic[T]):
     ) -> Iterator[T]: ...
 
     @abstractmethod
-    def copy(self) -> IGraph[T]: ...
+    def copy(self) -> IGraph[T, Weight]: ...
 
     @abstractmethod
     def __str__(self) -> str: ...
