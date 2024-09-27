@@ -736,6 +736,18 @@ class GraphTest(unittest.TestCase):
         self.undirected_graph.connect("A", "B")
         self.assertFalse(self.undirected_graph.is_cyclic)
 
+        self.undirected_graph.connect("B", "C")
+        self.assertFalse(self.undirected_graph.is_cyclic)
+
+        self.undirected_graph.connect("C", "A")
+        self.assertTrue(self.undirected_graph.is_cyclic)
+
+        self.undirected_graph.connect("D", "B")
+        self.assertTrue(self.undirected_graph.is_cyclic)
+
+        self.undirected_graph.disconnect("C", "A")
+        self.assertFalse(self.undirected_graph.is_cyclic)
+
 
 if __name__ == "__main__":
     unittest.main()

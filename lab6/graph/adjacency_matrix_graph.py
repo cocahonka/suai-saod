@@ -40,19 +40,22 @@ class AdjacencyMatrixGraph(IGraph[T, Weight]):
 
         for index, vertex in enumerate(self._vertices):
             if not black[index]:
-                if self._is_cyclic(vertex, black, gray):
+                if self._is_cyclic(index, vertex, black, gray):
                     return True
 
         return False
 
-    def _is_cyclic(self, vertex: T, black: List[bool], gray: List[bool]) -> bool:
+    def _is_cyclic(self, from_index: int, vertex: T, black: List[bool], gray: List[bool]) -> bool:
         black[self._get_vertex_index(vertex)] = True
         gray[self._get_vertex_index(vertex)] = True
 
         for successor in self.get_successors(vertex):
             successor_index: int = self._get_vertex_index(successor)
+            if not self._is_directed and successor_index == from_index:
+                continue
+
             if not black[successor_index]:
-                if self._is_cyclic(successor, black, gray):
+                if self._is_cyclic(self._get_vertex_index(vertex), successor, black, gray):
                     return True
             elif gray[successor_index]:
                 return True
