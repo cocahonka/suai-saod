@@ -16,9 +16,9 @@ class VertexNotFoundError(GraphError, Generic[T]):
         super().__init__(f"Vertex {vertex} not found in the graph.")
 
 
-class EdgeNotFoundError(GraphError, Generic[T]):
-    def __init__(self, from_vertex: T, to_vertex: T) -> None:
-        super().__init__(f"Edge from {from_vertex} to {to_vertex} not found in the graph.")
+class SelfConnectionError(GraphError, Generic[T]):
+    def __init__(self, vertex: T) -> None:
+        super().__init__(f"Vertex {vertex} cannot be connected to itself.")
 
 
 class GraphTraversalType(Enum):
@@ -77,11 +77,17 @@ class IGraph(ABC, Generic[T, Weight]):
         self,
         from_vertex: T,
         to_vertex: T,
-        weight: Optional[Weight] = None,
+        weight: Weight = 0,
     ) -> None: ...
 
     @abstractmethod
+    def connect_all(self, edges: List[Tuple[T, T, Weight]]) -> None: ...
+
+    @abstractmethod
     def disconnect(self, from_vertex: T, to_vertex: T) -> None: ...
+
+    @abstractmethod
+    def disconnect_all(self, edges: List[Tuple[T, T]]) -> None: ...
 
     @abstractmethod
     def contains(self, vertex: T) -> bool: ...
@@ -90,10 +96,15 @@ class IGraph(ABC, Generic[T, Weight]):
     def __contains__(self, vertex: T) -> bool: ...
 
     @abstractmethod
-    def is_connected_to(self, from_vertex: T, to_vertex: T) -> bool: ...
+    def is_connected_to(
+        self,
+        from_vertex: T,
+        to_vertex: T,
+        bidirectional: bool = False,
+    ) -> bool: ...
 
     @abstractmethod
-    def get_weight(self, from_vertex: T, to_vertex: T) -> Optional[Weight]: ...
+    def get_weight(self, from_vertex: T, to_vertex: T) -> Weight: ...
 
     @abstractmethod
     def get_predecessors(self, to_vertex: T) -> List[T]: ...
