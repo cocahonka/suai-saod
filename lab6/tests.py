@@ -7,6 +7,11 @@ from typing import List
 
 from common.extra_typing import override
 from lab6.algs.adjacency_matrix.dijkstra import NegativeWeightException, dijkstra
+from lab6.algs.adjacency_matrix.topological_sort import (
+    CycleInGraphException,
+    NotDirectedGraphException,
+    topological_sort,
+)
 from lab6.graph.adjacency_matrix_graph import AdjacencyMatrixGraph
 from lab6.graph.graph import (
     GraphTraversalType,
@@ -1059,6 +1064,55 @@ class GraphAlgsTest(unittest.TestCase):
             ]
         )
         self.assertEqual(dijkstra(self.undirected_graph, "X1", "X4"), (["X1", "X2", "X4"], 2))
+
+    def test_topological_sort(self) -> None:
+        graph: AdjacencyMatrixGraph[str, int] = AdjacencyMatrixGraph(is_directed=True)
+
+        graph.add_all(["A", "B", "C"])
+        self.assertListEqual(["A", "B", "C"], topological_sort(graph))
+
+        graph.connect_all(
+            [
+                ("A", "B", 0),
+                ("B", "C", 0),
+            ]
+        )
+        self.assertListEqual(["C", "B", "A"], topological_sort(graph))
+
+        graph.disconnect_all(
+            [
+                ("A", "B"),
+                ("B", "C"),
+            ]
+        )
+        graph.add_all(["D", "E"])
+        graph.connect_all(
+            [
+                ("A", "B", 0),
+                ("B", "C", 0),
+                ("A", "D", 0),
+                ("D", "E", 0),
+            ]
+        )
+        self.assertListEqual(["C", "B", "E", "D", "A"], topological_sort(graph))
+
+        graph.clear()
+        graph.add_all(["X1", "X2", "X3", "X4"])
+        graph.connect_all(
+            [
+                ("X1", "X4", 0),
+                ("X4", "X2", 0),
+                ("X4", "X3", 0),
+                ("X3", "X2", 0),
+            ]
+        )
+        self.assertListEqual(["X2", "X3", "X4", "X1"], topological_sort(graph))
+
+        graph.connect("X2", "X1", 0)
+        self.assertRaises(CycleInGraphException, topological_sort, graph)
+
+        undirected_graph: AdjacencyMatrixGraph[str, int] = AdjacencyMatrixGraph()
+        self.assertRaises(NotDirectedGraphException, topological_sort, undirected_graph)
 
 
 if __name__ == "__main__":
