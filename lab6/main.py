@@ -212,6 +212,11 @@ def main() -> None:
         )
         print(
             f"Dijkstra for cities graph (Saint Petersburg - Gravity Falls): {dijkstra(undirected_graph_city, saint_petersburg, gravity_falls)}",
+        )
+        graph_city_copy: AdjacencyMatrixGraph[City, float] = undirected_graph_city.copy()
+        graph_city_copy.remove(magic_city)
+        print(
+            f"Dijkstra for cities graph (without Magic City) (Sosnovy Bor - Syktyvkar): {dijkstra(graph_city_copy, sosnovy_bor, syktyvkar)}",
             end=end,
         )
 
