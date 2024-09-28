@@ -6,6 +6,7 @@ from common.benchmark import Benchmark, BenchmarkCallback
 from common.extra_typing import override
 from lab6.graph.adjacency_matrix_graph import AdjacencyMatrixGraph
 from lab6.graph.graph import GraphTraversalType
+from lab6.serializers.graph_serializer import GraphSerializer
 
 
 class GraphBenchmark(Benchmark):
@@ -80,7 +81,40 @@ class GraphBenchmark(Benchmark):
         return callback, self.n
 
 
-class GraphHydratedBenchmark(Benchmark): ...
+class GraphHydratedBenchmark(Benchmark):
+    @override
+    def setUp(self) -> None:
+        self.graph: AdjacencyMatrixGraph[int, int] = AdjacencyMatrixGraph(is_directed=True)
+        self.filename: str = "data.json"
+        self.n: int = 5000
+
+    @override
+    def tearDown(self) -> None:
+        import os
+
+        try:
+            os.remove(self.filename)
+        except FileNotFoundError:
+            pass
+
+    def benchmark_file_save(self) -> BenchmarkCallback:
+        self.graph.add_all(sample(range(self.n), self.n))
+
+        def callback() -> None:
+            GraphSerializer.save_graph_to_file(self.graph, self.filename)
+
+        return callback, 1, self.n
+
+    def benchmark_file_load(self) -> BenchmarkCallback:
+        self.graph.add_all(sample(range(self.n), self.n))
+
+        GraphSerializer.save_graph_to_file(self.graph, self.filename)
+        self.graph.clear()
+
+        def callback() -> None:
+            GraphSerializer.load_graph_from_file(self.graph, self.filename, int)
+
+        return callback, 1, self.n
 
 
 class GraphAlgsBenchmark(Benchmark): ...
