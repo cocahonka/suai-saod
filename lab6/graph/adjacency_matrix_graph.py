@@ -447,7 +447,6 @@ class AdjacencyMatrixGraph(IGraph[T, Weight]):
             return f"{self.__class__.__name__} is empty"
 
         str_vertices: List[str] = list(map(str, self._vertices))
-        max_length_vertex: int = max(map(len, str_vertices), default=0)
         max_length_weight: int = max(
             len(str(weight))
             for line in self._adjacency_matrix
@@ -456,11 +455,11 @@ class AdjacencyMatrixGraph(IGraph[T, Weight]):
         )
 
         matrix_header: List[str] = [
-            f"{'':<{max_length_vertex}} | {' | '.join(str(vertex)[:max_length_weight].center(max_length_weight) for vertex in str_vertices)} |"
+            f"{'':<{max_length_weight}} | {' | '.join(str(vertex)[:max_length_weight].center(max_length_weight) for vertex in str_vertices)} |"
         ]
 
         str_matrix: List[str] = matrix_header + [
-            f"{vertex:<{max_length_vertex}} | {' | '.join(str(weight).center(max_length_weight) if weight is not None else '-' * max_length_weight for weight in line)} |"
+            f"{vertex[:max_length_weight]:<{max_length_weight}} | {' | '.join(str(weight).center(max_length_weight) if weight is not None else '-' * max_length_weight for weight in line)} |"
             for vertex, line in zip(str_vertices, self._adjacency_matrix)
         ]
 
