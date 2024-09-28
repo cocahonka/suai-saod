@@ -1066,27 +1066,25 @@ class GraphAlgsTest(unittest.TestCase):
         self.assertEqual(dijkstra(self.undirected_graph, "X1", "X4"), (["X1", "X2", "X4"], 2))
 
     def test_topological_sort(self) -> None:
-        graph: AdjacencyMatrixGraph[str, int] = AdjacencyMatrixGraph(is_directed=True)
+        self.directed_graph.add_all(["A", "B", "C"])
+        self.assertListEqual(["A", "B", "C"], topological_sort(self.directed_graph))
 
-        graph.add_all(["A", "B", "C"])
-        self.assertListEqual(["A", "B", "C"], topological_sort(graph))
-
-        graph.connect_all(
+        self.directed_graph.connect_all(
             [
                 ("A", "B", 0),
                 ("B", "C", 0),
             ]
         )
-        self.assertListEqual(["C", "B", "A"], topological_sort(graph))
+        self.assertListEqual(["C", "B", "A"], topological_sort(self.directed_graph))
 
-        graph.disconnect_all(
+        self.directed_graph.disconnect_all(
             [
                 ("A", "B"),
                 ("B", "C"),
             ]
         )
-        graph.add_all(["D", "E"])
-        graph.connect_all(
+        self.directed_graph.add_all(["D", "E"])
+        self.directed_graph.connect_all(
             [
                 ("A", "B", 0),
                 ("B", "C", 0),
@@ -1094,11 +1092,11 @@ class GraphAlgsTest(unittest.TestCase):
                 ("D", "E", 0),
             ]
         )
-        self.assertListEqual(["C", "B", "E", "D", "A"], topological_sort(graph))
+        self.assertListEqual(["C", "B", "E", "D", "A"], topological_sort(self.directed_graph))
 
-        graph.clear()
-        graph.add_all(["X1", "X2", "X3", "X4"])
-        graph.connect_all(
+        self.directed_graph.clear()
+        self.directed_graph.add_all(["X1", "X2", "X3", "X4"])
+        self.directed_graph.connect_all(
             [
                 ("X1", "X4", 0),
                 ("X4", "X2", 0),
@@ -1106,13 +1104,12 @@ class GraphAlgsTest(unittest.TestCase):
                 ("X3", "X2", 0),
             ]
         )
-        self.assertListEqual(["X2", "X3", "X4", "X1"], topological_sort(graph))
+        self.assertListEqual(["X2", "X3", "X4", "X1"], topological_sort(self.directed_graph))
 
-        graph.connect("X2", "X1", 0)
-        self.assertRaises(CycleInGraphException, topological_sort, graph)
+        self.directed_graph.connect("X2", "X1", 0)
+        self.assertRaises(CycleInGraphException, topological_sort, self.directed_graph)
 
-        undirected_graph: AdjacencyMatrixGraph[str, int] = AdjacencyMatrixGraph()
-        self.assertRaises(NotDirectedGraphException, topological_sort, undirected_graph)
+        self.assertRaises(NotDirectedGraphException, topological_sort, self.undirected_graph)
 
 
 if __name__ == "__main__":
