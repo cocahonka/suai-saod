@@ -249,9 +249,10 @@ class AdjacencyMatrixGraph(IGraph[T, Weight]):
         return [neighbor for _, neighbor in self._get_neighbors(self._vzip(vertex))]
 
     def _get_neighbors(self, vertex: Vertex[T]) -> List[Vertex[T]]:
-        seen: Set[Vertex[T]] = set()
-        neighbors: List[Vertex[T]] = self._get_predecessors(vertex) + self._get_successors(vertex)
-        return [x for x in neighbors if x not in seen and not seen.add(x)]  # type: ignore[func-returns-value]
+        if self._is_directed:
+            return self._get_predecessors(vertex) + self._get_successors(vertex)
+
+        return self._get_successors(vertex)
 
     @override
     def get_edges(self) -> List[Tuple[T, T, Optional[Weight]]]:
