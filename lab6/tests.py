@@ -6,6 +6,7 @@ from functools import total_ordering
 from typing import List
 
 from common.extra_typing import override
+from lab6.algs.adjacency_matrix.dijkstra import NegativeWeightException, dijkstra
 from lab6.graph.adjacency_matrix_graph import AdjacencyMatrixGraph
 from lab6.graph.graph import (
     GraphTraversalType,
@@ -959,6 +960,105 @@ class GraphSerializationTests(unittest.TestCase):
             AdjacencyMatrixGraph[GraphSerializationTests.Item, int](False),
             self.undirected_graph_filename,
         )
+
+
+class GraphAlgsTest(unittest.TestCase):
+    @override
+    def setUp(self) -> None:
+        self.directed_graph: AdjacencyMatrixGraph[str, int] = AdjacencyMatrixGraph(is_directed=True)
+        self.undirected_graph: AdjacencyMatrixGraph[str, int] = AdjacencyMatrixGraph(
+            is_directed=False
+        )
+
+    def test_directed_graph_dijkstra(self) -> None:
+        self.directed_graph.add_all(["X1", "X2", "X3", "X4", "X5", "X6", "X7"])
+
+        self.directed_graph.connect_all(
+            [
+                ("X1", "X3", 11),
+                ("X1", "X4", 15),
+                ("X1", "X5", 7),
+                ("X2", "X5", 14),
+                ("X2", "X6", 18),
+                ("X3", "X2", 9),
+                ("X3", "X4", 13),
+                ("X3", "X5", 7),
+                ("X3", "X6", 11),
+                ("X3", "X7", 22),
+                ("X4", "X6", 11),
+                ("X4", "X7", 16),
+                ("X5", "X6", 8),
+                ("X5", "X7", 23),
+                ("X6", "X7", 19),
+            ]
+        )
+
+        self.assertEqual(dijkstra(self.directed_graph, "X1", "X7"), (["X1", "X5", "X7"], 30))
+
+        self.directed_graph.clear()
+        self.directed_graph.add_all(["X1", "X2", "X3"])
+        self.assertEqual(dijkstra(self.directed_graph, "X1", "X3"), None)
+
+        self.directed_graph.connect_all([("X1", "X2", 5), ("X2", "X3", 5), ("X3", "X1", -1)])
+        self.assertEqual(dijkstra(self.directed_graph, "X1", "X3"), (["X1", "X2", "X3"], 10))
+
+        self.directed_graph.connect("X1", "X3", -1)
+        self.assertRaises(NegativeWeightException, dijkstra, self.directed_graph, "X1", "X3")
+
+        self.directed_graph.clear()
+        self.directed_graph.add_all(["X1", "X2", "X3", "X4"])
+        self.directed_graph.connect_all(
+            [
+                ("X1", "X3", 1),
+                ("X1", "X2", 0),
+                ("X2", "X4", 2),
+                ("X3", "X4", 2),
+            ]
+        )
+        self.assertEqual(dijkstra(self.directed_graph, "X1", "X4"), (["X1", "X2", "X4"], 2))
+
+    def test_undirected_graph_dijkstra(self) -> None:
+        self.undirected_graph.add_all(["X1", "X2", "X3", "X4", "X5", "X6"])
+
+        self.undirected_graph.connect_all(
+            [
+                ("X1", "X2", 7),
+                ("X1", "X3", 9),
+                ("X1", "X6", 14),
+                ("X2", "X3", 10),
+                ("X2", "X4", 15),
+                ("X3", "X6", 2),
+                ("X3", "X4", 11),
+                ("X4", "X5", 6),
+                ("X6", "X5", 9),
+            ]
+        )
+
+        self.assertEqual(
+            dijkstra(self.undirected_graph, "X1", "X5"), (["X1", "X3", "X6", "X5"], 20)
+        )
+
+        self.undirected_graph.clear()
+        self.undirected_graph.add_all(["X1", "X2", "X3"])
+        self.assertEqual(dijkstra(self.undirected_graph, "X1", "X3"), None)
+
+        self.undirected_graph.connect_all([("X1", "X2", 5), ("X2", "X3", 5), ("X3", "X1", -1)])
+        self.assertRaises(NegativeWeightException, dijkstra, self.undirected_graph, "X1", "X3")
+
+        self.undirected_graph.connect("X3", "X1", 1)
+        self.assertEqual(dijkstra(self.undirected_graph, "X1", "X3"), (["X1", "X3"], 1))
+
+        self.undirected_graph.clear()
+        self.undirected_graph.add_all(["X1", "X2", "X3", "X4"])
+        self.undirected_graph.connect_all(
+            [
+                ("X1", "X3", 1),
+                ("X1", "X2", 0),
+                ("X2", "X4", 2),
+                ("X3", "X4", 2),
+            ]
+        )
+        self.assertEqual(dijkstra(self.undirected_graph, "X1", "X4"), (["X1", "X2", "X4"], 2))
 
 
 if __name__ == "__main__":
