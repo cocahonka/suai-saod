@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Iterator, List, Optional, Set, Tuple, TypeVar, cast
+from typing import Callable, Iterator, List, Optional, Tuple, TypeVar, cast
 
 from common.extra_typing import override
 from lab6.graph.graph import (
