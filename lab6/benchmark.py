@@ -7,14 +7,14 @@ from common.extra_typing import override
 from lab6.algs.adjacency_matrix.dijkstra import dijkstra
 from lab6.algs.adjacency_matrix.topological_sort import topological_sort
 from lab6.graph.adjacency_matrix_graph import AdjacencyMatrixGraph
-from lab6.graph.graph import GraphTraversalType
+from lab6.graph.graph import GraphTraversalType, IGraph
 from lab6.serializers.graph_serializer import GraphSerializer
 
 
 class GraphBenchmark(Benchmark):
     @override
     def setUp(self) -> None:
-        self.graph: AdjacencyMatrixGraph[int, int] = AdjacencyMatrixGraph(is_directed=True)
+        self.graph: IGraph[int, int] = AdjacencyMatrixGraph(is_directed=True)
 
         self.n: int = 2500
 
@@ -86,7 +86,7 @@ class GraphBenchmark(Benchmark):
 class GraphHydratedBenchmark(Benchmark):
     @override
     def setUp(self) -> None:
-        self.graph: AdjacencyMatrixGraph[int, int] = AdjacencyMatrixGraph(is_directed=True)
+        self.graph: IGraph[int, int] = AdjacencyMatrixGraph(is_directed=True)
         self.filename: str = "data.json"
         self.n: int = 5000
 
